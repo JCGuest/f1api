@@ -18,7 +18,7 @@ development:
   username: f1api
 
   # The password associated with the postgres role (username).
-  password: <%= ENV['FIAPI_DB_PASSWORD'] %>
+  password: <%= ENV['F1API_DB_PASSWORD'] %>
 
   # Connect on a TCP socket. Omitted by default since the client uses a
   # domain socket that doesn't need configuration. Windows does not have
