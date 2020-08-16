@@ -9,10 +9,19 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [url, setUrl] = useState("");
 
+  const handleAudio = async e => {
+    e.persist();
+    e.preventDefault();
+    const file = e.target[2].files[0]
+    if (!file) console.log("no file");
+    console.log(file);
+  }
+
   const handleSubmit = async e => {
     e.preventDefault();
+    if (e.target[2].files[0]) handleAudio(e);
+    // console.log(e)
     const file = e.target[1].files[0];
-    console.log(file)
     if (!file) return;
 
     setLoading(true);
@@ -53,13 +62,20 @@ function App() {
           <label htmlFor="caption">
             Caption
           </label>
-          <input type="text" name="caption" />
+            <input type="text" name="caption" />
+          <br></br>
+
           <label htmlFor="image" >
             Upload image
           </label>
-          <input type="file" name="image" accept="image/*" />
+            <input type="file" name="image" accept="image/*" />
+          <br></br>
 
-          <input type="submit" value="Submit" />
+          <label htmlFor="audio">
+            Upload MP3
+          </label>
+            <input type="file" name="audio" accept="audio/*"/>
+            <input type="submit" value="Submit" />
        </form>
       </header>
     </div>
