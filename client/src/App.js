@@ -2,7 +2,7 @@ import React from 'react';
 import './App.css';
 import { useState } from 'react';
 
-const aws = "localhost:4000"
+const api = "localhost:4000"
 
 function App() {
 
@@ -10,15 +10,17 @@ function App() {
   const [url, setUrl] = useState("");
 
   const handleSubmit = async e => {
+    e.preventDefault();
     const file = e.target[1].files[0];
     console.log(file)
     if (!file) return;
 
     setLoading(true);
 
-    const payload = await fetch(`http://${aws}/s3/direct_post`).then(res =>
+    const payload = await fetch(`http://${api}/s3/direct_post`).then(res =>
       res.json()
     );
+    console.log(payload)
 
     const url = payload.url;
     const formData = new FormData();
@@ -32,6 +34,8 @@ function App() {
       method: 'POST',
       body: formData
     }).then(res => res.text())
+
+    console.log(xml)
   
     const uploadUrl = new DOMParser()
       .parseFromString(xml, 'application/xml')
