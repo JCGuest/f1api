@@ -1,85 +1,122 @@
 import React from 'react';
 import './App.css';
-import { useState } from 'react';
 
 const api = "localhost:4000"
 
-function App() {
+class App extends React.Component  {
+  constructor() {
+    super();
+    this.state = {
+      loading: false,
+      url: "",
+      caption: "",
+      image: "",
+      audio: ""
+    }
+  }
+  
 
-  const [loading, setLoading] = useState(false);
-  const [url, setUrl] = useState("");
-
-  const handleAudio = async e => {
+  handleAudio = async e => {
+    // e.preventDefault();
     e.persist();
-    e.preventDefault();
     const file = e.target[2].files[0]
     if (!file) console.log("no file");
-    console.log(file);
+    this.upload(file)
+  };
+
+  handleImage = e => {
+    // e.preventDefault();
+    const file = e.target[1].files[0]
+    this.upload(file)
+
   }
 
-  const handleSubmit = async e => {
+  handleSubmit = e => {
     e.preventDefault();
-    if (e.target[2].files[0]) handleAudio(e);
-    // console.log(e)
-    const file = e.target[1].files[0];
-    if (!file) return;
 
-    setLoading(true);
+    this.setState({
+      ...this.state,
+      caption: "",
+      image: "",
+      audio: ""
+    })
 
-    const payload = await fetch(`http://${api}/s3/direct_post`).then(res =>
-      res.json()
-    );
-    console.log(payload)
+    if (e.target[2].files) this.handleAudio(e);
+    if (e.target[1].file) this.handleImage(e)
+  };
 
-    const url = payload.url;
-    const formData = new FormData();
+  upload = async file => {
+    // const file = e.target[1].files[0];
+    //   if (!file) return;
 
-    Object.keys(payload.fields).forEach(key =>
-      formData.append(key, payload.fields[key])
-    );
-    formData.append('file', file);
+      
+      const payload = await fetch(`http://${api}/s3/direct_post`).then(res =>
+        res.json()
+      );
+      console.log(payload)
 
-    const xml = await fetch(url, {
-      method: 'POST',
-      body: formData
-    }).then(res => res.text())
+      const url = payload.url;
+      const formData = new FormData();
 
-    console.log(xml)
-  
-    const uploadUrl = new DOMParser()
-      .parseFromString(xml, 'application/xml')
-      .getElementsByTagName('Location')[0].textContent;
+      Object.keys(payload.fields).forEach(key =>
+        formData.append(key, payload.fields[key])
+      );
+      formData.append('file', file);
 
-    setLoading(false);
-    setUrl(uploadUrl);  
+      const xml = await fetch(url, {
+        method: 'POST',
+        body: formData
+      }).then(res => res.text())
+
+      console.log(xml)
+    
+      const uploadUrl = new DOMParser()
+        .parseFromString(xml, 'application/xml')
+        .getElementsByTagName('Location')[0].textContent;
+
+      this.setState({
+        ...this.state,
+        loading: false,
+        url: uploadUrl
+      })
+      
 
   };
 
-  return (
-    <div className="App">
-      <header className="App-header">
-        <form onSubmit={handleSubmit}>
-          <label htmlFor="caption">
-            Caption
-          </label>
-            <input type="text" name="caption" />
-          <br></br>
+  handleChange = e => {
+    const {name, value} = e.target
+        this.setState({
+            [name]: value
+        })
+  }
 
-          <label htmlFor="image" >
-            Upload image
-          </label>
-            <input type="file" name="image" accept="image/*" />
-          <br></br>
+  render() {
+    return (
+      <div className="App">
+        <header className="App-header">
+          <form onSubmit={this.handleSubmit}>
+            <label htmlFor="caption">
+              Caption
+            </label>
+              <input type="text" name="caption" value={this.state.caption} onChange={this.handleChange} />
+            <br></br>
 
-          <label htmlFor="audio">
-            Upload MP3
-          </label>
-            <input type="file" name="audio" accept="audio/*"/>
-            <input type="submit" value="Submit" />
-       </form>
-      </header>
-    </div>
-  );
-}
+            <label htmlFor="image" >
+              Upload image
+            </label>
+              <input type="file" name="image" accept="image/*" value={this.state.image} onChange={this.handleChange} />
+            <br></br>
+
+            <label htmlFor="audio">
+              Upload MP3
+            </label>
+              <input type="file" name="audio" accept="audio/*" value={this.state.audio} onChange={this.handleChange} />
+              <input type="submit" value="Submit" />
+        </form>
+        </header>
+      </div>
+    );
+  };
+};
 
 export default App;
