@@ -1,7 +1,10 @@
 Rails.application.routes.draw do
-  
+  # S3 bucket upload handler
   get '/s3/direct_post', to: 's3#direct_post'
   resources :uploads
-  resources :users, only: [:create, :show]
+
+  # Users
+  post "users/", to: ""
+  
 
 end
