@@ -1,6 +1,4 @@
 class UploadsController < ApplicationController
-  def new
-  end
 
   def create
     #Create object in bucket for upload
@@ -27,6 +25,4 @@ class UploadsController < ApplicationController
     end
   end
 
-  def index
-  end
 end
