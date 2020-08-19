@@ -12,9 +12,33 @@ class App extends React.Component  {
       caption: "",
       image: "",
       audio: ""
-    }
-  }
+    };
+  };
   
+
+  handleSubmit = e => {
+    e.preventDefault();
+
+    this.setState({
+      ...this.state,
+      caption: "",
+      image: "",
+      audio: ""
+    })
+
+    if (e.target.id === "audio") {
+      e.persist();
+      console.log(e)
+      const file = e.target[0].files[0];
+      if (!file) {console.log("no file")};
+      this.upload(file);
+    }
+    else {
+      const file = e.target[1].files[0];
+      if (!file) {console.log("no file")};
+      this.upload(file);
+    };
+  };
 
   handleAudio = async e => {
     // e.preventDefault();
@@ -27,22 +51,8 @@ class App extends React.Component  {
   handleImage = e => {
     // e.preventDefault();
     const file = e.target[1].files[0]
+    if (!file) console.log("no file");
     this.upload(file)
-
-  }
-
-  handleSubmit = e => {
-    e.preventDefault();
-
-    this.setState({
-      ...this.state,
-      caption: "",
-      image: "",
-      audio: ""
-    })
-
-    if (e.target[2].files) this.handleAudio(e);
-    if (e.target[1].file) this.handleImage(e)
   };
 
   upload = async file => {
@@ -94,25 +104,25 @@ class App extends React.Component  {
     return (
       <div className="App">
         <header className="App-header">
-          <form onSubmit={this.handleSubmit}>
+          <form id="image" onSubmit={this.handleSubmit}>
             <label htmlFor="caption">
               Caption
             </label>
               <input type="text" name="caption" value={this.state.caption} onChange={this.handleChange} />
-            <br></br>
-
             <label htmlFor="image" >
               Upload image
             </label>
               <input type="file" name="image" accept="image/*" value={this.state.image} onChange={this.handleChange} />
+            <input type="submit" value="Upload"/>
+          </form>
             <br></br>
-
+          <form id="audio" onSubmit={this.handleSubmit}>
             <label htmlFor="audio">
               Upload MP3
             </label>
               <input type="file" name="audio" accept="audio/*" value={this.state.audio} onChange={this.handleChange} />
-              <input type="submit" value="Submit" />
-        </form>
+            <input type="submit" value="Upload" />
+          </form>
         </header>
       </div>
     );
